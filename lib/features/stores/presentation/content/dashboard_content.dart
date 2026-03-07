@@ -1,0 +1,250 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../public/auth/providers/auth_provider.dart';
+import '../../../public/profile/presentation/widgets/user_avatar.dart';
+import '../widgets/dashboard/inventory_kpi_widget.dart';
+import '../widgets/dashboard/stock_alerts_widget.dart';
+import '../widgets/dashboard/quick_actions_widget.dart';
+import '../widgets/dashboard/recent_activity_widget.dart';
+
+class DashboardContent extends ConsumerWidget {
+  final Function(String) onNavigate;
+
+  const DashboardContent({super.key, required this.onNavigate});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(authProvider).user;
+
+    final firstName = user?['firstName'] ?? '';
+    final lastName = user?['lastName'] ?? '';
+    final userEmail = user?['email'] ?? '';
+    final profilePic = user?['profilePictureUrl'] as String?;
+
+    final String displayName;
+    if (firstName.isNotEmpty && lastName.isNotEmpty) {
+      displayName = '$firstName $lastName';
+    } else if (firstName.isNotEmpty) {
+      displayName = '$firstName $lastName';
+    } else if (lastName.isNotEmpty) {
+      displayName = '$firstName $lastName';
+    } else {
+      displayName = 'Stores Team';
+    }
+
+    final greeting = _getTimeBasedGreeting();
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildWelcomeHeader(firstName, displayName, greeting, userEmail, profilePic),
+          const SizedBox(height: 24),
+
+          const InventoryKPIWidget(),
+          const SizedBox(height: 24),
+
+          const StockAlertsWidget(),
+          const SizedBox(height: 24),
+
+          QuickActionsWidget(onNavigate: onNavigate),
+          const SizedBox(height: 24),
+
+          const RecentActivityWidget(),
+        ],
+      ),
+    );
+  }
+
+  String _getTimeBasedGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) {
+      return 'Good Morning';
+    } else if (hour < 17) {
+      return 'Good Afternoon';
+    } else {
+      return 'Good Evening';
+    }
+  }
+
+  Widget _buildWelcomeHeader(String firstName, String displayName, String greeting, String userEmail, String? profilePic) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xFF1E3A8A),
+            Color(0xFF3730A3),
+            Color(0xFF5B21B6),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          stops: [0.0, 0.6, 1.0],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF1E3A8A).withValues(alpha: 0.4),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
+            spreadRadius: 2,
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 50,
+                      height: 50,
+                      margin: const EdgeInsets.only(right: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.2),
+                            blurRadius: 8,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: ClipOval(
+                        child: UserAvatar(
+                          imageUrl: profilePic,
+                          radius: 25,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '$greeting,',
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.95),
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            firstName.isNotEmpty ? '$firstName!' : displayName,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                          if (userEmail.isNotEmpty) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              userEmail,
+                              style: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.85),
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Here\'s your inventory overview for today',
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.95),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 8,
+                  children: [
+                    _buildStatChip('Total Inventory Value: KES 12.5M', Icons.inventory),
+                    _buildStatChip('Low Stock Items: 8', Icons.warning,
+                        onTap: () => onNavigate('/stores/inventory')),
+                    _buildStatChip('Pending Orders: 15', Icons.shopping_cart,
+                        onTap: () => onNavigate('/stores/procurement')),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.3),
+                    width: 2,
+                  ),
+                ),
+                child: const Icon(Icons.inventory_2, color: Colors.white, size: 32),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Dashboard',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatChip(String text, IconData icon, {VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: MouseRegion(
+        cursor: onTap != null ? SystemMouseCursors.click : SystemMouseCursors.basic,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.2),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: Colors.white, size: 16),
+              const SizedBox(width: 6),
+              Text(
+                text,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  decoration: onTap != null ? TextDecoration.underline : TextDecoration.none,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

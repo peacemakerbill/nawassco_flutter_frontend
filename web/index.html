@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base href="$FLUTTER_BASE_HREF" />
+  <meta charset="UTF-8" />
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
+  <meta name="description" content="Nakuru Water and Sanitation Services" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="apple-mobile-web-app-title" content="Nawassco Portal" />
+  <link rel="apple-touch-icon" href="icons/Icon-192.png" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="manifest" href="manifest.json" />
+  <title>Nawassco Portal</title>
+
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(to bottom, #b9e6f2 0%, #e6f9ff 100%);
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* Splash screen container */
+    #splash-screen {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      background: linear-gradient(to bottom, #b9e6f2 0%, #e6f9ff 100%);
+      overflow: hidden;
+      z-index: 9999;
+      animation: fadeIn 1s ease-in;
+    }
+
+    /* Ripple water text */
+    #splash-text {
+      position: relative;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #0077b6;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-align: center;
+      overflow: hidden;
+      background: linear-gradient(180deg, #0077b6 20%, #00b4d8 40%, #0096c7 60%, #48cae4 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer 4s ease-in-out infinite, float 3s ease-in-out infinite;
+    }
+
+    /* Water ripple shimmer effect */
+    @keyframes shimmer {
+      0% { background-position: 0% 50%; filter: blur(0px) brightness(1); }
+      50% { background-position: 100% 50%; filter: blur(0.6px) brightness(1.1); }
+      100% { background-position: 0% 50%; filter: blur(0px) brightness(1); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* Wave section */
+    .wave-container {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 180px;
+      line-height: 0;
+      overflow: hidden;
+    }
+
+    .wave {
+      position: relative;
+      width: 200%;
+      height: 100%;
+      animation: waveMove 8s linear infinite;
+    }
+
+    .wave:nth-child(2) {
+      opacity: 0.6;
+      animation-duration: 10s;
+    }
+
+    .wave:nth-child(3) {
+      opacity: 0.4;
+      animation-duration: 12s;
+    }
+
+    .wave svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    @keyframes waveMove {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; visibility: hidden; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+
+<body>
+<div id="splash-screen">
+  <div id="splash-text">Loading Nawassco Portal</div>
+
+  <div class="wave-container">
+    <div class="wave">
+      <svg viewBox="0 0 1200 200" preserveAspectRatio="none">
+        <path d="M0,120 C300,200 900,0 1200,100 L1200,200 L0,200 Z" fill="#0099ff"></path>
+      </svg>
+    </div>
+    <div class="wave">
+      <svg viewBox="0 0 1200 200" preserveAspectRatio="none">
+        <path d="M0,140 C400,220 800,40 1200,120 L1200,200 L0,200 Z" fill="#33bbff"></path>
+      </svg>
+    </div>
+    <div class="wave">
+      <svg viewBox="0 0 1200 200" preserveAspectRatio="none">
+        <path d="M0,160 C400,240 800,60 1200,140 L1200,200 L0,200 Z" fill="#66ccff"></path>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- Flutter loader -->
+<script src="flutter_bootstrap.js" async></script>
+
+<script>
+  // Hide splash screen when Flutter finishes first frame
+  window.addEventListener('flutter-first-frame', function () {
+    const splash = document.getElementById('splash-screen');
+    splash.style.animation = 'fadeOut 0.8s forwards';
+    setTimeout(() => splash.remove(), 900);
+  });
+</script>
+</body>
+</html>
