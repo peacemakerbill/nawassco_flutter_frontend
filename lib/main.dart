@@ -16,7 +16,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Load .env file at app startup
-  await dotenv.load(fileName: ".env");
+  // await dotenv.load(fileName: ".env");
 
   final container = ProviderContainer();
 
